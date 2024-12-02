@@ -1,0 +1,182 @@
+[
+  {
+    "plant": "Basil",
+    "sunlight": ["Full"],
+    "soil": ["Well-drained", "loam"],
+    "water": "Moderate",
+    "temperature": "20-30°C",
+    "flowering": "No",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "Mint",
+    "sunlight": ["Partial shade"],
+    "soil": ["Moist", "rich"],
+    "water": "High",
+    "temperature": "15-25°C",
+    "flowering": "Yes",
+    "humidity": "High"
+  },
+  {
+    "plant": "Thyme",
+    "sunlight": ["Full"],
+    "soil": ["Well-drained","sandy"],
+    "water": "Low",
+    "temperature": "10-25°C",
+    "flowering": "Yes",
+    "humidity": "Low"
+  },
+  {
+    "plant": "Marigolds",
+    "sunlight": ["Full"],
+    "soil": ["Well-drained","loam"],
+    "water": "Moderate",
+    "temperature": "20-35°C",
+    "flowering": "Yes",
+    "humidity": "Low to Medium"
+  },
+  {
+    "plant": "Rosemary",
+    "sunlight": ["Full"],
+    "soil": ["Well-drained", "loamy"],
+    "water": "Low",
+    "temperature": "15-30°C",
+    "flowering": "Yes",
+    "humidity": "Low"
+  },
+  {
+    "plant": "Parsley",
+    "sunlight": ["Partial","shade"],
+    "soil": ["Moist", "fertile"],
+    "water": "Moderate",
+    "temperature": "10-25°C",
+    "flowering": "No",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "Petunias",
+    "sunlight": ["Full"],
+    "soil": ["Rich", "well-drained"],
+    "water": "Moderate",
+    "temperature": "15-30°C",
+    "flowering": "Yes",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "Geraniums",
+    "sunlight": ["Full", "Partial"],
+    "soil": ["Well-drained"],
+    "water": "Low to Moderate",
+    "temperature": "10-25°C",
+    "flowering": "Yes",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "Impatiens",
+    "sunlight": ["Shade","partial"],
+    "soil": ["Moist", "Humus-rich"],
+    "water": "High",
+    "temperature": "15-25°C",
+    "flowering": "Yes",
+    "humidity": "High"
+  },
+  {
+    "plant": "Snake Plant",
+    "sunlight": ["Low", "Bright"],
+    "soil": ["Well-drained","loam"],
+    "water": "Low",
+    "temperature": "15-30°C",
+    "flowering": "No",
+    "humidity": "Low"
+  },
+  {
+    "plant": "Spider Plant",
+    "sunlight": ["Indirect"],
+    "soil": ["Well-drained"],
+    "water": "Moderate",
+    "temperature": "15-25°C",
+    "flowering": "No",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "ZZ Plant (Zanzibar Gem)",
+    "sunlight": ["Low", "Bright"],
+    "soil": ["Well-drained"],
+    "water": "Low",
+    "temperature": "15-30°C",
+    "flowering": "No",
+    "humidity": "Low"
+  },
+  {
+    "plant": "Peace Lily",
+    "sunlight": ["Low", "Medium"],
+    "soil": ["Moist", "rich"],
+    "water": "Moderate",
+    "temperature": "18-30°C",
+    "flowering": "Yes",
+    "humidity": "High"
+  },
+  {
+    "plant": "Lavender",
+    "sunlight": ["Full"],
+    "soil": ["Sandy", "alkaline"],
+    "water": "Low",
+    "temperature": "15-30°C",
+    "flowering": "Yes",
+    "humidity": "Low"
+  },
+  {
+    "plant": "Aloe Vera",
+    "sunlight": ["Full","bright"],
+    "soil": ["Well-drained","sandy"],
+    "water": "Low",
+    "temperature": "15-35°C",
+    "flowering": "Yes",
+    "humidity": "Low"
+  },
+  {
+    "plant": "Pothos",
+    "sunlight": ["Low", "Bright"],
+    "soil": ["Standard", "potting mix"],
+    "water": "Moderate",
+    "temperature": "15-30°C",
+    "flowering": "No",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "Rose",
+    "sunlight": ["Full"],
+    "soil": ["Well-drained", "fertile"],
+    "water": "Moderate",
+    "temperature": "15-28°C",
+    "flowering": "Yes",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "Begonias",
+    "sunlight": ["Indirect"],
+    "soil": ["Rich", "well-drained"],
+    "water": "Moderate",
+    "temperature": "15-25°C",
+    "flowering": "Yes",
+    "humidity": "Medium"
+  },
+  {
+    "plant": "Cactus",
+    "sunlight": ["Bright"],
+    "soil": ["Sandy", "well-drained"],
+    "water": "Low",
+    "temperature": "20-40°C",
+    "flowering": "Yes",
+    "humidity": "Low"
+  },
+  {
+    "plant": "Zinnias",
+    "sunlight": ["Full"],
+    "soil": ["Well-drained","loamy"],
+    "water": "Moderate",
+    "temperature": "20-35°C",
+    "flowering": "Yes",
+    "humidity": "Medium"
+  }
+]

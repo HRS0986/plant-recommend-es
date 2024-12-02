@@ -1,0 +1,3 @@
+from experta import KnowledgeEngine
+
+class InferenceEngine(KnowledgeEngine):...
