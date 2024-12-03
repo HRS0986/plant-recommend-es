@@ -1,204 +1,172 @@
-# from experta import Fact, Rule, KnowledgeEngine
-#
-# class Environment(Fact):
-#     """Fact for environmental conditions."""
-#     pass
-#
-# class PlantRecommender(KnowledgeEngine):
-#     @Rule(Environment(sunlight="high", soil_type="sandy", water="low"))
-#     def recommend_cactus(self):
-#         print("Cactus is recommended for high sunlight, sandy soil, and low water.")
-#
-#     @Rule(Environment(sunlight="medium", soil_type="loam", water="medium"))
-#     def recommend_rose(self):
-#         print("Rose is recommended for medium sunlight, loam soil, and medium water.")
-#
-#     @Rule(Environment(sunlight="low", soil_type="clay", water="high"))
-#     def recommend_fern(self):
-#         print("Fern is recommended for low sunlight, clay soil, and high water.")
-#
-# # Create an instance of the engine
-# engine = PlantRecommender()
-# engine.reset()
-#
-# # Provide facts (input conditions)
-# engine.declare(Environment(sunlight=input("Sunlight: "), soil_type=input("Soil Type: "), water=input("Water Need: ")))
-#
-# # Run the engine
-# engine.run()
+from experta import Fact, Rule, KnowledgeEngine, MATCH
+
+# Define a Fact class for books
+class BookFact(Fact):
+    title = str
+    category = str
+    author = str
+    keywords = list
+    rating = float
+    target_audience = str
+    language = str
+    book_type = str
+
+# Expert system engine
+class LibraryExpertSystem(KnowledgeEngine):
+    def __init__(self, knowledge_base):
+        super().__init__()
+        self.knowledge_base = knowledge_base  # Reference to the knowledge base
+        self.inferred_books = []
+        self.alternatives = []
+
+    # Rule: Match exact book parameters
+    @Rule(
+        BookFact(
+            category=MATCH.category,
+            author=MATCH.author,
+            target_audience=MATCH.target_audience,
+            language=MATCH.language,
+            book_type=MATCH.book_type,
+        ),
+        salience=10,  # High priority for exact matches
+    )
+    def exact_match(self, category, author, target_audience, language, book_type):
+        self.inferred_books = [
+            book for book in self.knowledge_base
+            if book.category == category and
+            book.author == author and
+            book.target_audience == target_audience and
+            book.language == language and
+            book.book_type == book_type
+        ]
+        if self.inferred_books:
+            print("\nExact Matches Found:")
+            for book in self.inferred_books:
+                print(book)
+
+    # Rule: Suggest alternatives based on partial matches
+    # @Rule(
+    #     BookFact(keywords=MATCH.keywords, rating=MATCH.rating),
+    #     salience=5,  # Medium priority for partial matches
+    # )
+    # def suggest_alternatives(self, keywords, rating):
+    #     self.alternatives = [
+    #         (book, len(set(keywords).intersection(book.keywords)), book.rating)
+    #         for book in self.knowledge_base
+    #         if book.rating >= rating - 0.5 and book.rating <= rating + 0.5
+    #     ]
+    #     self.alternatives.sort(key=lambda x: (-x[1], abs(x[2] - rating)))  # Sort by relevance
+    #     if not self.inferred_books:
+    #         print("\nNo exact matches found. Alternative recommendations:")
+    #         for alt, relevance, _ in self.alternatives[:3]:
+    #             print(f"{alt} (Relevance Score: {relevance})")
+
+
+    @Rule(
+        BookFact(keywords=MATCH.keywords, category=MATCH.category, target_audience=MATCH.target_audience, language=MATCH.language, rating=MATCH.rating),
+        salience=5,
+    )
+    def suggest_alternatives(self, keywords, category, target_audience, language, rating):
+        self.alternatives = []
+
+        for book in self.knowledge_base:
+            relevance_score = 0
+
+            # Calculate relevance score
+            # Match keywords
+            relevance_score += len(book.keywords.intersection(keywords))
+
+            # Match rating with tolerance
+            if book.rating >= rating - 0.5 and book.rating <= rating + 0.5:
+                relevance_score += 1
+
+            # Match category, target audience, and language
+            if book.category == category:
+                relevance_score += 5
+            if book.target_audience == target_audience:
+                relevance_score += 1
+            if book.language == language:
+                relevance_score += 1
+
+            # Add book to alternatives if relevance score > 0
+            if relevance_score > 0:
+                self.alternatives.append((book, relevance_score))
+
+        # Sort by relevance score in descending order
+        self.alternatives.sort(key=lambda x: x[1], reverse=True)
+
+        # If no exact matches, suggest top alternatives
+        if not self.inferred_books:
+            print("\nNo exact matches found. Alternative recommendations:")
+            for alt, relevance in self.alternatives[:3]:  # Limit to top 3 recommendations
+                print(f"{alt} (Relevance Score: {relevance})")
 
 
 
-from experta import *
 
-# =====================================================
-# Section 1: Facts (Knowledge Base)
-# =====================================================
-games = [
-    {
-        "name": "The Witcher 3",
-        "genre": "RPG",
-        "platform": "PC",
-        "price": 30,
-        "link": "https://store.steampowered.com/app/292030/The_Witcher_3/",
-        "developer": "CD Projekt Red",
-        "publisher": "CD Projekt"
-    },
-    {
-        "name": "God of War",
-        "genre": "Action",
-        "platform": "PS5",
-        "price": 50,
-        "link": "https://store.playstation.com/god-of-war",
-        "developer": "Santa Monica Studio",
-        "publisher": "Sony Interactive Entertainment"
-    },
-    {
-        "name": "Age of Empires IV",
-        "genre": "Strategy",
-        "platform": "PC",
-        "price": 40,
-        "link": "https://store.steampowered.com/app/1466860/Age_of_Empires_IV/",
-        "developer": "Relic Entertainment",
-        "publisher": "Xbox Game Studios"
-    },
-    {
-        "name": "Spider-Man: Miles Morales",
-        "genre": "Action",
-        "platform": "PS5",
-        "price": 50,
-        "link": "https://store.playstation.com/spider-man-morales",
-        "developer": "Insomniac Games",
-        "publisher": "Sony Interactive Entertainment"
-    }
+    # Rule: Backward chaining to find book category
+    @Rule(BookFact(title=MATCH.title), salience=8)
+    def backward_chaining_category(self, title):
+        matching_books = [book for book in self.knowledge_base if book.title.lower() == title.lower()]
+        if matching_books:
+            book = matching_books[0]
+            print(f"\nBackward Chaining Result for '{title}':")
+            print(f"Category: {book.category}")
+            print(book)
+        else:
+            print(f"No book found with the title '{title}'.")
+
+# Define Book class as per initial structure
+class Book:
+    def __init__(self, title, category, author, keywords, rating, target_audience, language, book_type):
+        self.title = title
+        self.category = category
+        self.author = author
+        self.keywords = set(keywords)
+        self.rating = rating
+        self.target_audience = target_audience
+        self.language = language
+        self.book_type = book_type
+
+    def __str__(self):
+        return f"Title: {self.title}, Author: {self.author}, Category: {self.category}, Rating: {self.rating}, Target Audience: {self.target_audience}, Language: {self.language}, Type: {self.book_type}"
+
+# Knowledge base with 10 books
+knowledge_base = [
+    Book("The Great Adventure", "Fiction", "John Doe", ["adventure", "mystery"], 4.5, "Adults", "English", "Paperback"),
+    Book("Learning Python", "Technology", "Mark Smith", ["programming", "python", "coding"], 4.7, "Beginners", "English", "Hardcover"),
+    Book("AI for Everyone", "Technology", "Andrew Ng", ["AI", "artificial intelligence", "machine learning"], 4.8, "Adults", "English", "Paperback"),
+    Book("The Joy of Cooking", "Cooking", "Julia Child", ["cooking", "recipes", "food"], 4.6, "Adults", "English", "Hardcover"),
+    Book("The Silent World of Nicholas Quinn", "Mystery", "Colin Dexter", ["mystery", "detective", "suspense"], 4.2, "Adults", "English", "Paperback"),
+    Book("The Psychology of Learning", "Psychology", "Sigmund Freud", ["psychology", "learning", "behavior"], 4.4, "Adults", "English", "Paperback"),
+    Book("The Hobbit", "Fantasy", "J.R.R. Tolkien", ["fantasy", "adventure", "dragons"], 4.9, "Teens", "English", "Hardcover"),
+    Book("JavaScript Essentials", "Technology", "David Flanagan", ["programming", "javascript", "web development"], 4.3, "Intermediate", "English", "Paperback"),
+    Book("Cooking with Love", "Cooking", "Rachel Ray", ["cooking", "easy recipes", "family meals"], 4.5, "Family", "English", "Paperback"),
+    Book("Deep Learning", "Technology", "Ian Goodfellow", ["AI", "deep learning", "neural networks"], 4.9, "Advanced", "English", "Hardcover"),
 ]
 
-# =====================================================
-# Section 2: Rules (Expert System with Relationships)
-# =====================================================
-class VideoGameExpert(KnowledgeEngine):
-    @Rule(Fact(action='recommend'))
-    def recommend_games_procedural(self):
-        """Step-by-step recommendation system with strict input matching."""
+# Instantiate and populate the expert system
+engine = LibraryExpertSystem(knowledge_base)
 
-        # Define expected genres and platforms
-        valid_genres = {game["genre"].lower() for game in games}  # Extract unique genres
-        valid_platforms = {game["platform"].lower() for game in games}  # Extract unique platforms
+# Start forward chaining with user inputs
+user_params = BookFact(
+    category="Technology",
+    author="Andrew Ng",
+    keywords=["AI", "machine learning","recipes"],
+    rating=4.5,
+    target_audience="Adults",
+    language="English",
+    book_type="Paperback"
+)
 
-        # Step 1: Ask for Genre (Mandatory)
-        while True:
-            genre = input(f"Enter the genre ({', '.join(valid_genres)}): ").strip().lower()
-            if genre in valid_genres:
-                break
-            print(f"There's no gaming genre called '{genre}'. Please choose from: {', '.join(valid_genres)}.")
+# Forward chaining for matching books
+print("\n--- Forward Chaining ---")
+engine.reset()
+engine.declare(user_params)
+engine.run()
 
-        # Step 2: Ask for Platform (Optional)
-        while True:
-            platform = input(f"Enter the platform ({', '.join(valid_platforms)}) or type 'Any' to skip: ").strip().lower()
-            if platform == "any":
-                platform = None  # Skip platform filter
-                break
-            if platform in valid_platforms:
-                break
-            print(f"There's no gaming platform called '{platform}'. Please choose from: {', '.join(valid_platforms)} or type 'Any' to skip.")
-
-        # Step 3: Ask for Budget (Optional)
-        budget = None
-        while True:
-            budget_input = input("Enter your budget (e.g., 50) or type 'Any' to skip: ").strip()
-            if budget_input.lower() == "any" or not budget_input:  # Skip budget
-                break
-            try:
-                budget = float(budget_input)
-                if budget < 0:
-                    print("Budget cannot be negative. Please enter a valid number or 'Any' to skip.")
-                    continue
-                break
-            except ValueError:
-                print("Invalid budget input. Please enter a number or 'Any' to skip.")
-
-        # Step 4: Filter Games
-        filtered_games = [game for game in games if game["genre"].lower() == genre]
-        if platform:
-            filtered_games = [game for game in filtered_games if game["platform"].lower() == platform]
-
-        budget_filtered_games = filtered_games
-        if budget is not None:
-            budget_filtered_games = [game for game in filtered_games if game["price"] <= budget]
-
-        # Step 5: Display Results
-        if budget_filtered_games:
-            print("\nRecommended games:")
-            for game in budget_filtered_games:
-                print(f"- {game['name']} (${game['price']}) - Buy here: {game['link']}")
-        else:
-            print("\nNo games match your budget. Showing all matching games based on genre and platform:")
-            if filtered_games:
-                for game in filtered_games:
-                    print(f"- {game['name']} (${game['price']}) - Buy here: {game['link']}")
-            else:
-                print("Sorry, no games match your criteria.")
-
-    @Rule(Fact(action='lookup'), Fact(name=MATCH.name))
-    def game_details(self, name):
-        """Retrieve details of a specific game by name with input validation."""
-        while True:
-            game = next((g for g in games if g["name"].lower() == name.lower()), None)
-            if game:
-                print(f"\nDetails for {game['name']}:")
-                print(f"- Genre: {game['genre']}")
-                print(f"- Platform: {game['platform']}")
-                print(f"- Price: ${game['price']}")
-                print(f"- Developer: {game['developer']}")
-                print(f"- Publisher: {game['publisher']}")
-                print(f"- Buy here: {game['link']}")
-                break
-            else:
-                print(f"\nSorry, no details found for '{name}'.")
-                name = input("Please enter a valid game name: ").strip()
-
-    @Rule(Fact(action='developer_games'), Fact(developer=MATCH.developer))
-    def games_by_developer(self, developer):
-        """Retrieve all games developed by a specific developer with input validation."""
-        while True:
-            developer_games = [game for game in games if game["developer"].lower() == developer.lower()]
-            if developer_games:
-                print(f"\nGames developed by {developer}:")
-                for game in developer_games:
-                    print(f"- {game['name']} (${game['price']}) - Buy here: {game['link']}")
-                break
-            else:
-                print(f"\nSorry, no games found for developer '{developer}'.")
-                developer = input("Please enter a valid developer name: ").strip()
-
-# =====================================================
-# Section 3: Main Program
-# =====================================================
-def main():
-    engine = VideoGameExpert()
-    engine.reset()
-
-    print("Welcome to the Video Game Expert System!")
-    print("Options:")
-    print("1. Recommend a game")
-    print("2. Look up game details")
-    print("3. Find all games by a developer\n")  # Removed Option 4
-
-    choice = input("Enter your choice (1, 2, or 3): ")  # Removed 4 from options
-
-    if choice == "1":
-        engine.declare(Fact(action='recommend'))
-    elif choice == "2":
-        name = input("Enter the game name to look up details: ").strip()
-        engine.declare(Fact(action='lookup'), Fact(name=name))
-    elif choice == "3":
-        developer = input("Enter the developer name: ").strip()
-        engine.declare(Fact(action='developer_games'), Fact(developer=developer))
-    else:
-        print("Invalid choice! Please restart the program.")
-
-    engine.run()
-
-if __name__ == "__main__":
-    main()
-
+# Backward chaining for a book title
+print("\n--- Backward Chaining ---")
+engine.reset()
+engine.declare(BookFact(title="AI for Everyone"))
+engine.run()
