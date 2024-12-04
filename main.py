@@ -1,4 +1,5 @@
 import streamlit as st
+import re
 
 # Import the existing expert system and facts
 from inference_engine import GardeningExpertSystem, PlantFact
@@ -94,15 +95,21 @@ def main():
     if st.sidebar.button("Find Plants", key="recommend"):
         # Create the expert system
         engine = GardeningExpertSystem(plants)
+        split_sequence = r'[:,. |-]'
+        sunlight_conditions = re.split(split_sequence, sunlight.strip().lower())
+        soil_conditions = re.split(split_sequence, soil.strip().lower())
+        water_conditions = re.split(split_sequence, water.strip().lower())
+        flowering_conditions = re.split(split_sequence, flowering.strip().lower())
+        humidity_conditions = re.split(split_sequence, humidity.strip().lower())
 
         # Reset and declare facts
         engine.reset()
         engine.declare(PlantFact(
-            sunlight=sunlight.strip().lower(),
-            soil=soil.strip().lower(),
-            water=water.strip().lower(),
-            flowering=flowering.strip().lower(),
-            humidity=humidity.strip().lower()
+            sunlight=sunlight_conditions[0],
+            soil=soil_conditions[0],
+            water=water_conditions[0],
+            flowering=flowering_conditions[0],
+            humidity=humidity_conditions[0]
         ))
 
         # Capture output
@@ -123,43 +130,6 @@ def main():
         # Capture and parse markdown results
         markdown_results = result.getvalue()
         st.markdown(markdown_results if markdown_results.strip() else "No plants match your criteria.")
-
-    # Specific Plant Lookup Section
-    st.sidebar.markdown(
-        "<h2 style='color:#388e3c;'>Want to know about a plant?</h2>",
-        unsafe_allow_html=True
-    )
-
-    specific_plant = st.sidebar.text_input("🌿 Enter Plant Name")
-
-    if st.sidebar.button("Find Details", key="lookup"):
-        if specific_plant:
-            # Create the expert system
-            engine = GardeningExpertSystem(plants)
-
-            # Reset and declare facts
-            engine.reset()
-            engine.declare(PlantFact(name=specific_plant.strip()))
-
-            # Capture output
-            import sys
-            from io import StringIO
-
-            # Redirect stdout to capture print statements
-            old_stdout = sys.stdout
-            result = StringIO()
-            sys.stdout = result
-
-            # Run the expert system
-            engine.run()
-
-            # Restore stdout
-            sys.stdout = old_stdout
-
-            # Display results
-            markdown_results = result.getvalue()
-            st.markdown(f"###### Here are some details about {specific_plant}. If you're planning to plant a {specific_plant} in your garden, make sure the environment meets the following conditions")
-            st.markdown(markdown_results if markdown_results.strip() else f"No information found for {specific_plant}.")
 
 if __name__ == "__main__":
     main()

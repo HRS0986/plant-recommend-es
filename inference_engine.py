@@ -63,7 +63,7 @@ class GardeningExpertSystem(KnowledgeEngine):
                     alternatives.append((plant, relevance_score))
             alternatives.sort(key=lambda x: x[1], reverse=True)
 
-            print(f"\n###### Sorry, it seems there are no plants fit for your needs. But these plant can be fit your needs:")
+            print(f"\n###### Sorry, it seems there are no plants fit for your needs. But these plant may be fit for your needs:")
             for plant, score in alternatives[:3]:
                 print(f"{PlantFact.get_plant_info(plant, score)}")
 
