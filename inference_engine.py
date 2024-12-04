@@ -1,7 +1,5 @@
 from experta import Rule, KnowledgeEngine, MATCH
-
-from facts import plants, PlantFact
-
+from facts import PlantFact
 
 # Expert system engine
 class GardeningExpertSystem(KnowledgeEngine):
@@ -31,7 +29,7 @@ class GardeningExpertSystem(KnowledgeEngine):
                and humidity == plant["humidity"]
         ]
         if self.recommended_plants:
-            print("\nExact Matches Found:")
+            print("\nFound matching plants:")
             for plant in self.recommended_plants:
                 print(PlantFact.get_plant_info(plant))
 
@@ -65,7 +63,7 @@ class GardeningExpertSystem(KnowledgeEngine):
 
             print("\nNo exact matches found. Alternative recommendations:")
             for plant, score in alternatives[:3]:
-                print(f"{PlantFact.get_plant_info(plant)} (Relevance Score: {score}/5)")
+                print(f"{PlantFact.get_plant_info(plant, score)}")
 
     # Rule: Backward chaining to find plants for specific conditions
     @Rule(PlantFact(plant=MATCH.name), salience=8)
@@ -73,32 +71,6 @@ class GardeningExpertSystem(KnowledgeEngine):
         matches = [p for p in self.knowledge_base if p["plant"].lower() == plant.lower()]
         if matches:
             print(f"\nDetails for '{plant}':")
-            print(matches[0])
+            print(PlantFact.get_plant_info(matches[0]))
         else:
             print(f"No plant found with the name '{plant}'.")
-
-# Populate the knowledge base with plant data
-knowledge_base = plants
-
-# Instantiate and populate the expert system
-engine = GardeningExpertSystem(knowledge_base)
-
-# Forward chaining with user-defined parameters
-user_params = PlantFact(
-    sunlight="Full",
-    soil="Well-drained",
-    water="Moderate",
-    flowering="Any",
-    humidity="Medium"
-)
-
-print("\n--- Forward Chaining ---")
-engine.reset()
-engine.declare(user_params)
-engine.run()
-
-# Backward chaining for a specific plant
-print("\n--- Backward Chaining ---")
-engine.reset()
-engine.declare(PlantFact(name="Mint"))
-engine.run()
