@@ -66,11 +66,10 @@ class GardeningExpertSystem(KnowledgeEngine):
                 print(f"{PlantFact.get_plant_info(plant, score)}")
 
     # Rule: Backward chaining to find plants for specific conditions
-    @Rule(PlantFact(plant=MATCH.name), salience=8)
-    def backward_chaining(self, plant):
-        matches = [p for p in self.knowledge_base if p["plant"].lower() == plant.lower()]
+    @Rule(PlantFact(name=MATCH.name), salience=8)
+    def backward_chaining(self, name):
+        matches = [p for p in self.knowledge_base if p["name"].lower() == name.lower()]
         if matches:
-            print(f"\nDetails for '{plant}':")
             print(PlantFact.get_plant_info(matches[0]))
         else:
-            print(f"No plant found with the name '{plant}'.")
+            print(f"No plant found with the name '{name}'.")

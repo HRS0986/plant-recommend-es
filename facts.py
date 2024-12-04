@@ -47,7 +47,7 @@ plants = (
               humidity="Low"),
     PlantFact(name="Spider Plant", sunlight=["Medium"], soil=["Well-drained"], water="Moderate", flowering="No",
               humidity="Medium"),
-    PlantFact(name="ZZ Plant (Zanzibar Gem)", sunlight=["Low", "Medium"], soil=["Well-drained"], water="Low",
+    PlantFact(name="Zanzibar Gem", sunlight=["Low", "Medium"], soil=["Well-drained"], water="Low",
               flowering="No", humidity="Low"),
     PlantFact(name="Peace Lily", sunlight=["Low", "Medium"], soil=["Moist"], water="Moderate", flowering="Yes",
               humidity="High"),

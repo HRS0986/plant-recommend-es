@@ -1,59 +1,108 @@
 import streamlit as st
-from experta import Fact, KnowledgeEngine, MATCH
 
 # Import the existing expert system and facts
 from inference_engine import GardeningExpertSystem, PlantFact
 from facts import plants
 
 def main():
-    st.title("🌱 Garden Plant Recommender")
+    # Set page config (e.g., wider layout)
+    st.set_page_config(page_title="🌱 Urban Gardening Expert", layout="wide")
 
-    # Sidebar for input parameters
-    st.sidebar.header("Plant Selection Criteria")
+    # Custom styling for background and text colors
+    st.markdown(
+        """
+        <style>
+        /* App background color */
+        .stApp {
+            background-color: #f0f8e8;  /* Light greenish background */
+        }
 
-    # Sunlight options
-    sunlight = st.sidebar.selectbox(
-        "Sunlight Preference",
-        ["Full", "Partial", "Shade"]
+        /* Sidebar styling */
+        .sidebar .sidebar-content {
+            background-color: #e8f5e9;  /* Light green background for sidebar */
+            color: #388e3c;  /* Dark green text */
+        }
+
+        /* Title and header font color */
+        h1, h2, h3, .st-subheader {
+            color: #2c6e2f;  /* Dark green text */
+        }
+
+        /* Input fields styling */
+        .stTextInput input, .stButton button {
+            background-color: #ffffff;  /* White background for input fields */
+            color: #2c6e2f;  /* Dark green font color */
+        }
+
+        /* Markdown text (outputs) */
+        .stMarkdown, .stText {
+            color: #333333;  /* Dark gray text for better readability */
+        }
+        
+        div[data-testid="stSidebarCollapseButton"] {
+            display: none;
+        }
+
+        /* Plant-specific input fields (color distinction) */
+        .stTextInput input:focus {
+            border-color: #76b041;  /* Focused input border in light green */
+        }
+        
+        .stAppHeader {
+            display: none;
+        }
+
+        </style>
+        """,
+        unsafe_allow_html=True
     )
 
-    # Soil options
-    soil = st.sidebar.selectbox(
-        "Soil Type",
-        ["Well-drained", "Clay", "Sandy", "Loamy"]
+    # Title with a gardening touch
+    st.markdown(
+        "<h1 style='text-align:center;'>🌿 Urban Gardening Expert 🌿</h1>",
+        unsafe_allow_html=True
     )
 
-    # Water requirement
-    water = st.sidebar.selectbox(
-        "Water Requirement",
-        ["Low", "Moderate", "High"]
+    # Sidebar with gardening-friendly colors
+    st.sidebar.markdown(
+        "<h2 style='color:#388e3c;'>What kind of plant are you looking for?</h2>",
+        unsafe_allow_html=True
     )
 
-    # Flowering preference
-    flowering = st.sidebar.selectbox(
-        "Flowering Preference",
-        ["Any", "Yes", "No"]
+    # Input fields
+    sunlight = st.sidebar.text_input(
+        "🌞 How much sunlight does your space get throughout the day? (Full, Medium, Low)",
     )
 
-    # Humidity
-    humidity = st.sidebar.selectbox(
-        "Humidity Level",
-        ["Low", "Medium", "High"]
+    soil = st.sidebar.text_input(
+        "🌱 What kind of soil do you typically have in your gardening area or yard? (Well-drained, Sandy, Loam, Rich, Moist)",
     )
 
-    # Recommend button
-    if st.sidebar.button("Find Plants"):
+    water = st.sidebar.text_input(
+        "💧 How much water does your plant need to thrive? (Low, Moderate, High)",
+    )
+
+    flowering = st.sidebar.text_input(
+        "🌸 Are you looking for a plant that flowers, or do you prefer a non-flowering plant? (Any, Yes, No)",
+    )
+
+    humidity = st.sidebar.text_input(
+        "💨 How humid is the environment where you plan to keep your plant? (Low, Medium, High)",
+    )
+
+    # Recommend button with a nature-inspired color
+    if st.sidebar.button("Find Plants", key="recommend"):
         # Create the expert system
         engine = GardeningExpertSystem(plants)
 
         # Reset and declare facts
         engine.reset()
         engine.declare(PlantFact(
-            sunlight=sunlight,
-            soil=soil,
-            water=water,
-            flowering=flowering,
-            humidity=humidity
+            sunlight=sunlight.strip(),
+            soil=soil.strip(),
+            water=water.strip(),
+            flowering=flowering.strip(),
+            humidity=humidity.strip()
         ))
 
         # Capture output
@@ -72,24 +121,28 @@ def main():
         sys.stdout = old_stdout
 
         # Display results
-        st.subheader("Recommended Plants")
+        st.subheader("🌼 Recommended Plants 🌼")
 
         # Capture and parse markdown results
         markdown_results = result.getvalue()
         st.markdown(markdown_results if markdown_results.strip() else "No plants match your criteria.")
 
-    # Specific Plant Lookup
-    st.sidebar.header("Specific Plant Lookup")
-    specific_plant = st.sidebar.text_input("Enter Plant Name")
+    # Specific Plant Lookup Section
+    st.sidebar.markdown(
+        "<h2 style='color:#388e3c;'>Specific Plant Lookup</h2>",
+        unsafe_allow_html=True
+    )
 
-    if st.sidebar.button("Look Up Plant"):
+    specific_plant = st.sidebar.text_input("🌿 Enter Plant Name", "Rose")
+
+    if st.sidebar.button("Look Up Plant", key="lookup"):
         if specific_plant:
             # Create the expert system
             engine = GardeningExpertSystem(plants)
 
             # Reset and declare facts
             engine.reset()
-            engine.declare(PlantFact(name=specific_plant))
+            engine.declare(PlantFact(name=specific_plant.strip()))
 
             # Capture output
             import sys
@@ -107,8 +160,8 @@ def main():
             sys.stdout = old_stdout
 
             # Display results
-            st.subheader(f"Details for {specific_plant}")
             markdown_results = result.getvalue()
+            st.markdown(f"###### Here are some details about {specific_plant}. If you're planning to plant a {specific_plant} in your garden, make sure the environment meets the following conditions")
             st.markdown(markdown_results if markdown_results.strip() else f"No information found for {specific_plant}.")
 
 if __name__ == "__main__":
