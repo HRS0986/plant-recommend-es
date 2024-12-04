@@ -22,16 +22,18 @@ class GardeningExpertSystem(KnowledgeEngine):
     def exact_match(self, sunlight, soil, water, flowering, humidity):
         self.recommended_plants = [
             plant for plant in self.knowledge_base
-            if sunlight in plant["sunlight"]
-               and soil in plant["soil"]
-               and water == plant["water"]
-               and (flowering == "Any" or flowering == plant["flowering"])
-               and humidity == plant["humidity"]
+            if sunlight in ",".join(plant["sunlight"]).lower()
+               and soil in ",".join(plant["soil"]).lower()
+               and water == plant["water"].lower()
+               and (flowering == "Any".lower() or flowering == plant["flowering"].lower())
+               and humidity == plant["humidity"].lower()
         ]
         if self.recommended_plants:
-            print("\nFound matching plants:")
+            print("\n\n\n##### These plants are good for your environment")
             for plant in self.recommended_plants:
-                print(PlantFact.get_plant_info(plant))
+                print(f">> + ##### {plant['name']}")
+            print("---")
+            print(PlantFact.get_reason_for_exact_match(self.recommended_plants[0]))
 
     # Rule: Suggest alternatives based on partial matches
     @Rule(
@@ -44,24 +46,24 @@ class GardeningExpertSystem(KnowledgeEngine):
             for plant in self.knowledge_base:
                 relevance_score = 0
                 # Match sunlight
-                if sunlight in plant["sunlight"]:
+                if sunlight in ",".join(plant["sunlight"]).lower():
                     relevance_score += 1
                 # Match soil type
-                if soil in plant["soil"]:
+                if soil in ",".join(plant["soil"]).lower():
                     relevance_score += 1
                 # Match water requirement
-                if water == plant["water"]:
+                if water == plant["water"].lower():
                     relevance_score += 1
-                if humidity == plant["humidity"]:
+                if humidity == plant["humidity"].lower():
                     relevance_score += 1
                 # Match flowering preference
-                if flowering == "Any" or flowering == plant["flowering"]:
+                if flowering == "Any".lower() or flowering == plant["flowering"].lower():
                     relevance_score += 1
                 if relevance_score > 0:
                     alternatives.append((plant, relevance_score))
             alternatives.sort(key=lambda x: x[1], reverse=True)
 
-            print("\nNo exact matches found. Alternative recommendations:")
+            print(f"\n###### Sorry, it seems there are no plants fit for your needs. But these plant can be fit your needs:")
             for plant, score in alternatives[:3]:
                 print(f"{PlantFact.get_plant_info(plant, score)}")
 

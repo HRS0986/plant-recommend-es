@@ -9,8 +9,8 @@ class PlantFact(Fact):
     flowering = str
     humidity = str
 
-    @classmethod
-    def get_plant_info(cls, plant, score = None):
+    @staticmethod
+    def get_plant_info(plant, score = None):
         """
         Generate a markdown-formatted string of plant information
         """
@@ -25,6 +25,13 @@ class PlantFact(Fact):
             f"- **Humidity:** {plant['humidity']}\n"
             f"---"
         )
+    @staticmethod
+    def get_reason_for_exact_match(plant):
+        return (f"These are the best plants for your environment. Because, these plants also need,\n\n"
+        f">> + {' or '.join(plant['sunlight'])} sunlight \n\n"
+        f">> + {' or '.join(plant['soil'])} soil type\n\n"
+        f">> + {plant['water']} level of water\n\n"
+        f">> + {plant['humidity']} humidity level")
 
 
 plants = (

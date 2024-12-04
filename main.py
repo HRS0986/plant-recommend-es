@@ -24,7 +24,7 @@ def main():
         }
 
         /* Title and header font color */
-        h1, h2, h3, .st-subheader {
+        h1, h2, h3, h4, h5, .st-subheader {
             color: #2c6e2f;  /* Dark green text */
         }
 
@@ -98,11 +98,11 @@ def main():
         # Reset and declare facts
         engine.reset()
         engine.declare(PlantFact(
-            sunlight=sunlight.strip(),
-            soil=soil.strip(),
-            water=water.strip(),
-            flowering=flowering.strip(),
-            humidity=humidity.strip()
+            sunlight=sunlight.strip().lower(),
+            soil=soil.strip().lower(),
+            water=water.strip().lower(),
+            flowering=flowering.strip().lower(),
+            humidity=humidity.strip().lower()
         ))
 
         # Capture output
@@ -120,22 +120,19 @@ def main():
         # Restore stdout
         sys.stdout = old_stdout
 
-        # Display results
-        st.subheader("🌼 Recommended Plants 🌼")
-
         # Capture and parse markdown results
         markdown_results = result.getvalue()
         st.markdown(markdown_results if markdown_results.strip() else "No plants match your criteria.")
 
     # Specific Plant Lookup Section
     st.sidebar.markdown(
-        "<h2 style='color:#388e3c;'>Specific Plant Lookup</h2>",
+        "<h2 style='color:#388e3c;'>Want to know about a plant?</h2>",
         unsafe_allow_html=True
     )
 
-    specific_plant = st.sidebar.text_input("🌿 Enter Plant Name", "Rose")
+    specific_plant = st.sidebar.text_input("🌿 Enter Plant Name")
 
-    if st.sidebar.button("Look Up Plant", key="lookup"):
+    if st.sidebar.button("Find Details", key="lookup"):
         if specific_plant:
             # Create the expert system
             engine = GardeningExpertSystem(plants)
